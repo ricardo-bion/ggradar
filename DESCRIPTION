@@ -1,0 +1,20 @@
+Repository: CRAN_ggradar
+Package: ggradar
+Type: Package
+Title: ggradar
+Version: 0.1
+Date: 2016-02-06
+Author: Ricardo Bion
+Maintainer: Ricardo Bion <ricardo.bion@airbnb.com>
+Description: ggradar radar charts for ggplot2
+License: GPL
+LazyData: true
+Imports:
+    dplyr,
+    ggplot2,
+    magrittr,
+    scales,
+    tidyr,
+    extrafont,
+    extrafontdb
+RoxygenNote: 5.0.1

@@ -1,0 +1,69 @@
+---
+title: "ggradar"
+output:
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi=300)
+
+options(warn=-1)
+
+```
+
+
+ggradar allows you to build radar charts with ggplot2. This package is based on [Paul Williamson's](http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html) code, with new aesthetics and compatibility with ggplot2 2.0.
+
+It was inspired by [d3radaR](http://www.buildingwidgets.com/blog/2015/12/9/week-49-d3radarr), an htmlwidget built by [timelyportfolio](https://github.com/timelyportfolio).
+
+
+## Install ggradar
+
+```{r, eval=FALSE}
+
+devtools::install_github("ricardo-bion/ggradar", 
+                          dependencies=TRUE)
+
+```
+
+## Use ggradar
+
+```{r, fig.width=15, fig.height=10}
+library(ggradar)
+
+suppressPackageStartupMessages(library(dplyr))
+library(scales)
+
+mtcars %>%
+     add_rownames( var = "group" ) %>%
+     mutate_each(funs(rescale), -group) %>%
+     head() %>% select(1:10) -> mtcars_radar
+
+ggradar(mtcars_radar) 
+
+```
+
+
+```{r}
+
+knitr::kable(mtcars_radar,format="markdown") 
+
+```
+
+## Custom fonts
+
+This package requires the Airbnb font and the extrafont package.
+
+```{r, eval=FALSE}
+
+# configured to work on a Mac, change directory to Unix or Windows
+download.file("https://dl.dropboxusercontent.com/u/2364714/airbnb_ttf_fonts/Circular Air-Light 3.46.45 PM.ttf", "/Library/Fonts/Circular Air-Light 3.46.45 PM.ttf", method="curl")
+
+extrafont::font_import(pattern = 'Circular', prompt=FALSE)
+
+
+
+```
