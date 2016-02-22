@@ -249,9 +249,9 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
   # ... + grid-line labels (max; ave; min) [only add min. gridline label if required]
   if (label.gridline.min==TRUE) {
 
-  base <- base + geom_text(aes(x=x,y=y,label="lowest"),data=gridline$min$label,size=grid.label.size, hjust=1, family="Circular Air Light") }
-  base <- base + geom_text(aes(x=x,y=y,label="median"),data=gridline$mid$label,size=grid.label.size, hjust=1, family="Circular Air Light")
-  base <- base + geom_text(aes(x=x,y=y,label="highest"),data=gridline$max$label,size=grid.label.size, hjust=1, family="Circular Air Light")
+  base <- base + geom_text(aes(x=x,y=y,label="0%"),data=gridline$min$label,size=grid.label.size*0.8, hjust=1, family="Circular Air Light") }
+  base <- base + geom_text(aes(x=x,y=y,label="50%"),data=gridline$mid$label,size=grid.label.size*0.8, hjust=1, family="Circular Air Light")
+  base <- base + geom_text(aes(x=x,y=y,label="100%"),data=gridline$max$label,size=grid.label.size*0.8, hjust=1, family="Circular Air Light")
   # ... + centre.y label if required [i.e. value of y at centre of plot circle]
   if (label.centre.y==TRUE) {
     centre.y.label <- data.frame(x=0, y=0, text=as.character(centre.y))
