@@ -40,7 +40,7 @@ library(scales)
 mtcars %>%
      add_rownames( var = "group" ) %>%
      mutate_each(funs(rescale), -group) %>%
-     head() %>% select(1:10) -> mtcars_radar
+     head(4) %>% select(1:10) -> mtcars_radar
 
 ggradar(mtcars_radar) 
 
