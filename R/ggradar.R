@@ -7,6 +7,8 @@
 
 
 ggradar <- function(plot.data,
+                             font.radar="Circular Air Light",
+                             values.radar = c("0%", "50%", "100%")                           
                              axis.labels=colnames(plot.data)[-1],                             
                              grid.min=0,  #10,
                              grid.mid=0.5,  #50,
@@ -207,16 +209,16 @@ if (plot.legend==FALSE) theme_clear <- theme_clear + theme(legend.position="none
 #base layer = axis labels for axes to left of central y-axis [x< -(x.centre.range)]
 base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
   geom_text(data=subset(axis$label,axis$label$x < (-x.centre.range)),
-            aes(x=x,y=y,label=text),size=axis.label.size,hjust=1, family="Circular Air Light") +
+            aes(x=x,y=y,label=text),size=axis.label.size,hjust=1, family=font.radar) +
   scale_x_continuous(limits=c(-1.5*plot.extent.x,1.5*plot.extent.x)) + 
   scale_y_continuous(limits=c(-plot.extent.y,plot.extent.y))
 
   # + axis labels for any vertical axes [abs(x)<=x.centre.range]
   base <- base + geom_text(data=subset(axis$label,abs(axis$label$x)<=x.centre.range),
-                           aes(x=x,y=y,label=text),size=axis.label.size,hjust=0.5, family="Circular Air Light")
+                           aes(x=x,y=y,label=text),size=axis.label.size,hjust=0.5, family=font.radar)
   # + axis labels for any vertical axes [x>x.centre.range]
   base <- base + geom_text(data=subset(axis$label,axis$label$x>x.centre.range),
-                           aes(x=x,y=y,label=text),size=axis.label.size,hjust=0, family="Circular Air Light")
+                           aes(x=x,y=y,label=text),size=axis.label.size,hjust=0, family=font.radar)
   # + theme_clear [to remove grey plot background, grid lines, axis tick marks and axis text]
   base <- base + theme_clear
   #  + background circle against which to plot radar data
@@ -249,21 +251,21 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
   # ... + grid-line labels (max; ave; min) [only add min. gridline label if required]
   if (label.gridline.min==TRUE) {
 
-  base <- base + geom_text(aes(x=x,y=y,label="0%"),data=gridline$min$label,size=grid.label.size*0.8, hjust=1, family="Circular Air Light") }
-  base <- base + geom_text(aes(x=x,y=y,label="50%"),data=gridline$mid$label,size=grid.label.size*0.8, hjust=1, family="Circular Air Light")
-  base <- base + geom_text(aes(x=x,y=y,label="100%"),data=gridline$max$label,size=grid.label.size*0.8, hjust=1, family="Circular Air Light")
+  base <- base + geom_text(aes(x=x,y=y,label=values.radar[1]),data=gridline$min$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
+  base <- base + geom_text(aes(x=x,y=y,label=values.radar[2]),data=gridline$mid$label,size=grid.label.size*0.8, hjust=1, family=font.radar)
+  base <- base + geom_text(aes(x=x,y=y,label=values.radar[3]),data=gridline$max$label,size=grid.label.size*0.8, hjust=1, family=font.radar)
   # ... + centre.y label if required [i.e. value of y at centre of plot circle]
   if (label.centre.y==TRUE) {
     centre.y.label <- data.frame(x=0, y=0, text=as.character(centre.y))
-    base <- base + geom_text(aes(x=x,y=y,label=text),data=centre.y.label,size=grid.label.size, hjust=0.5, family="Circular Air Light") }
+    base <- base + geom_text(aes(x=x,y=y,label=text),data=centre.y.label,size=grid.label.size, hjust=0.5, family=font.radar) }
 
   base <- base + theme(legend.key.width=unit(3,"line")) + theme(text = element_text(size = 20, 
-                                                                                      family = "Circular Air Light")) + 
+                                                                                      family = font.radar)) + 
   theme(legend.text = element_text(size = 20), legend.position="left") + 
   theme(legend.key.height=unit(2,"line")) +
   scale_colour_manual(values=rep(c("#FF5A5F", "#FFB400", "#007A87",  "#8CE071", "#7B0051", 
     "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"), 100)) +
-  theme(text=element_text(family="Circular Air Light")) + 
+  theme(text=element_text(family=font.radar)) + 
   theme(legend.title=element_blank())
 
   return(base)
