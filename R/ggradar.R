@@ -8,7 +8,7 @@
 
 ggradar <- function(plot.data,
                              font.radar="Circular Air Light",
-                             values.radar = c("0%", "50%", "100%")                           
+                             values.radar = c("0%", "50%", "100%"),                       
                              axis.labels=colnames(plot.data)[-1],                             
                              grid.min=0,  #10,
                              grid.mid=0.5,  #50,
