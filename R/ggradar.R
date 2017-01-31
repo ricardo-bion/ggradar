@@ -37,6 +37,7 @@ ggradar <- function(plot.data,
                              background.circle.transparency=0.2,
                              plot.legend=if (nrow(plot.data)>1) TRUE else FALSE,
                              legend.title="",
+                             plot.title="",
                              legend.text.size=grid.label.size ) {
 
   library(ggplot2)
@@ -267,6 +268,10 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
     "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"), 100)) +
   theme(text=element_text(family=font.radar)) + 
   theme(legend.title=element_blank())
+
+  if (plot.title != "") {
+    base <- base + ggtitle(plot.title)
+  }
 
   return(base)
 
