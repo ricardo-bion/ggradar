@@ -37,6 +37,7 @@ ggradar <- function(plot.data,
                              background.circle.transparency=0.2,
                              plot.legend=if (nrow(plot.data)>1) TRUE else FALSE,
                              legend.title="",
+                             plot.title="",
                              legend.text.size=grid.label.size ) {
 
   library(ggplot2)
@@ -259,14 +260,18 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
     centre.y.label <- data.frame(x=0, y=0, text=as.character(centre.y))
     base <- base + geom_text(aes(x=x,y=y,label=text),data=centre.y.label,size=grid.label.size, hjust=0.5, family=font.radar) }
 
-  base <- base + theme(legend.key.width=unit(3,"line")) + theme(text = element_text(size = 20, 
-                                                                                      family = font.radar)) + 
-  theme(legend.text = element_text(size = 20), legend.position="left") + 
+  base <- base + theme(legend.key.width=unit(3,"line")) + theme(text = element_text(size = 20,
+                                                                                      family = font.radar)) +
+  theme(legend.text = element_text(size = legend.text.size), legend.position="left") +
   theme(legend.key.height=unit(2,"line")) +
   scale_colour_manual(values=rep(c("#FF5A5F", "#FFB400", "#007A87",  "#8CE071", "#7B0051", 
     "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"), 100)) +
   theme(text=element_text(family=font.radar)) + 
   theme(legend.title=element_blank())
+
+  if (plot.title != "") {
+    base <- base + ggtitle(plot.title)
+  }
 
   return(base)
 
