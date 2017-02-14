@@ -7,7 +7,7 @@
 
 
 ggradar <- function(plot.data,
-                             font.radar="Circular Air Light",
+                             font.radar="Arial",
                              values.radar = c("0%", "50%", "100%"),                       
                              axis.labels=colnames(plot.data)[-1],                             
                              grid.min=0,  #10,
@@ -37,7 +37,7 @@ ggradar <- function(plot.data,
                              background.circle.transparency=0.2,
                              plot.legend=if (nrow(plot.data)>1) TRUE else FALSE,
                              legend.title="",
-                             legend.text.size=grid.label.size ) {
+                             legend.text.size=7 ) {
 
   library(ggplot2)
 
