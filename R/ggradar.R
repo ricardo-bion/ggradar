@@ -28,6 +28,8 @@ ggradar <- function(plot.data,
                              grid.label.size=7,
                              gridline.label.offset=-0.1*(grid.max-centre.y),
                              label.gridline.min=TRUE,
+                             label.gridline.mid=TRUE,
+                             label.gridline.max=TRUE,
                              axis.label.offset=1.15,
                              axis.label.size=8,
                              axis.line.colour="grey",
@@ -249,12 +251,10 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
                             lty=gridline.mid.linetype,colour=gridline.mid.colour,size=grid.line.width)
   base <- base +  geom_path(data=gridline$max$path,aes(x=x,y=y),
                             lty=gridline.max.linetype,colour=gridline.max.colour,size=grid.line.width)
-  # ... + grid-line labels (max; ave; min) [only add min. gridline label if required]
-  if (label.gridline.min==TRUE) {
-
-  base <- base + geom_text(aes(x=x,y=y,label=values.radar[1]),data=gridline$min$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
-  base <- base + geom_text(aes(x=x,y=y,label=values.radar[2]),data=gridline$mid$label,size=grid.label.size*0.8, hjust=1, family=font.radar)
-  base <- base + geom_text(aes(x=x,y=y,label=values.radar[3]),data=gridline$max$label,size=grid.label.size*0.8, hjust=1, family=font.radar)
+  # ... + grid-line labels (max; mid; min)
+  if (label.gridline.min==TRUE) { base <- base + geom_text(aes(x=x,y=y,label=values.radar[1]),data=gridline$min$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
+  if (label.gridline.mid==TRUE) { base <- base + geom_text(aes(x=x,y=y,label=values.radar[2]),data=gridline$mid$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
+  if (label.gridline.max==TRUE) { base <- base + geom_text(aes(x=x,y=y,label=values.radar[3]),data=gridline$max$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
   # ... + centre.y label if required [i.e. value of y at centre of plot circle]
   if (label.centre.y==TRUE) {
     centre.y.label <- data.frame(x=0, y=0, text=as.character(centre.y))
