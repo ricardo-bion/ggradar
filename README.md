@@ -58,7 +58,7 @@ This package requires the Airbnb font and the extrafont package.
 
 ```r
 # configured to work on a Mac, change directory to Unix or Windows
-download.file("https://dl.dropboxusercontent.com/u/2364714/airbnb_ttf_fonts/Circular Air-Light 3.46.45 PM.ttf", "/Library/Fonts/Circular Air-Light 3.46.45 PM.ttf", method="curl")
+download.file("https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Light%203.46.45%20PM.ttf", "~/Circular Air-Light 3.46.45 PM.ttf", method="curl")
 
 extrafont::font_import(pattern = 'Circular', prompt=FALSE)
 ```
