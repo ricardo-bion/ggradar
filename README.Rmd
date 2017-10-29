@@ -36,10 +36,11 @@ library(ggradar)
 
 suppressPackageStartupMessages(library(dplyr))
 library(scales)
+library(tibble)
 
 mtcars %>%
-     add_rownames( var = "group" ) %>%
-     mutate_each(funs(rescale), -group) %>%
+     rownames_to_column( var = "group" ) %>%
+     mutate_at(vars(-group),funs(rescale)) %>%
      tail(4) %>% select(1:10) -> mtcars_radar
 
 ggradar(mtcars_radar) 
