@@ -33,6 +33,7 @@ ggradar <- function(plot.data,
                              axis.line.colour="grey",
                              group.line.width=1.5,
                              group.point.size=6,
+                             group.colours=NULL,
                              background.circle.colour="#D7D6D1",
                              background.circle.transparency=0.2,
                              plot.legend=if (nrow(plot.data)>1) TRUE else FALSE,
@@ -51,7 +52,7 @@ ggradar <- function(plot.data,
   #axis.labels [if supplied] is designed to hold 'long version' of variable names
   #with line-breaks indicated using \n
 
-  #caclulate total plot extent as radius of outer circle x a user-specifiable scaling factor
+  #calculate total plot extent as radius of outer circle x a user-specifiable scaling factor
   plot.extent.x=(grid.max+abs(centre.y))*plot.extent.x.sf
   plot.extent.y=(grid.max+abs(centre.y))*plot.extent.y.sf
 
@@ -184,7 +185,7 @@ funcCircleCoords <- function(center = c(0,0), r = 1, npoints = 100){
   #print(gridline$mid$label)
 ### Start building up the radar plot
 
-# Delcare 'theme_clear', with or without a plot legend as required by user
+# Declare 'theme_clear', with or without a plot legend as required by user
 #[default = no legend if only 1 group [path] being plotted]
 theme_clear <- theme_bw(base_size=20) + 
   theme(axis.text.y=element_blank(),
@@ -260,12 +261,18 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
     centre.y.label <- data.frame(x=0, y=0, text=as.character(centre.y))
     base <- base + geom_text(aes(x=x,y=y,label=text),data=centre.y.label,size=grid.label.size, hjust=0.5, family=font.radar) }
 
+  if (!is.null(group.colours)){
+    colour_values=rep(group.colours,100)
+  } else {
+    colour_values=rep(c("#FF5A5F", "#FFB400", "#007A87",  "#8CE071", "#7B0051", 
+                       "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"), 100)
+  }
+  
   base <- base + theme(legend.key.width=unit(3,"line")) + theme(text = element_text(size = 20,
                                                                                       family = font.radar)) +
   theme(legend.text = element_text(size = legend.text.size), legend.position="left") +
   theme(legend.key.height=unit(2,"line")) +
-  scale_colour_manual(values=rep(c("#FF5A5F", "#FFB400", "#007A87",  "#8CE071", "#7B0051", 
-    "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"), 100)) +
+  scale_colour_manual(values=colour_values) +
   theme(text=element_text(family=font.radar)) + 
   theme(legend.title=element_blank())
 
