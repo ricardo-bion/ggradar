@@ -217,6 +217,14 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
   scale_x_continuous(limits=c(-1.5*plot.extent.x,1.5*plot.extent.x)) + 
   scale_y_continuous(limits=c(-plot.extent.y,plot.extent.y))
 
+# ... + circular grid-lines at 'min', 'mid' and 'max' y-axis values
+base <- base +  geom_path(data=gridline$min$path,aes(x=x,y=y),
+                          lty=gridline.min.linetype,colour=gridline.min.colour,size=grid.line.width)
+base <- base +  geom_path(data=gridline$mid$path,aes(x=x,y=y),
+                          lty=gridline.mid.linetype,colour=gridline.mid.colour,size=grid.line.width)
+base <- base +  geom_path(data=gridline$max$path,aes(x=x,y=y),
+                          lty=gridline.max.linetype,colour=gridline.max.colour,size=grid.line.width)
+
   # + axis labels for any vertical axes [abs(x)<=x.centre.range]
   base <- base + geom_text(data=subset(axis$label,abs(axis$label$x)<=x.centre.range),
                            aes(x=x,y=y,label=text),size=axis.label.size,hjust=0.5, family=font.radar)
@@ -245,13 +253,7 @@ base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
 
   #... + amend Legend title
   if (plot.legend==TRUE) base  <- base + labs(colour=legend.title,size=legend.text.size)
-  # ... + circular grid-lines at 'min', 'mid' and 'max' y-axis values
-  base <- base +  geom_path(data=gridline$min$path,aes(x=x,y=y),
-                            lty=gridline.min.linetype,colour=gridline.min.colour,size=grid.line.width)
-  base <- base +  geom_path(data=gridline$mid$path,aes(x=x,y=y),
-                            lty=gridline.mid.linetype,colour=gridline.mid.colour,size=grid.line.width)
-  base <- base +  geom_path(data=gridline$max$path,aes(x=x,y=y),
-                            lty=gridline.max.linetype,colour=gridline.max.colour,size=grid.line.width)
+
   # ... + grid-line labels (max; mid; min)
   if (label.gridline.min==TRUE) { base <- base + geom_text(aes(x=x,y=y,label=values.radar[1]),data=gridline$min$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
   if (label.gridline.mid==TRUE) { base <- base + geom_text(aes(x=x,y=y,label=values.radar[2]),data=gridline$mid$label,size=grid.label.size*0.8, hjust=1, family=font.radar) }
