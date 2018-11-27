@@ -7,6 +7,7 @@
 
 
 ggradar <- function(plot.data,
+                             base.size=15, 
                              font.radar="Arial",
                              values.radar = c("0%", "50%", "100%"),                       
                              axis.labels=colnames(plot.data)[-1],                             
@@ -41,7 +42,7 @@ ggradar <- function(plot.data,
                              plot.legend=if (nrow(plot.data)>1) TRUE else FALSE,
                              legend.title="",
                              plot.title="",
-                             legend.text.size=grid.label.size ) {
+                             legend.text.size=14 ) {
 
   library(ggplot2)
 
@@ -189,7 +190,7 @@ funcCircleCoords <- function(center = c(0,0), r = 1, npoints = 100){
 
 # Declare 'theme_clear', with or without a plot legend as required by user
 #[default = no legend if only 1 group [path] being plotted]
-theme_clear <- theme_bw(base_size=20) + 
+theme_clear <- theme_bw(base_size=base.size) + 
   theme(axis.text.y=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks=element_blank(),
