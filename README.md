@@ -51,14 +51,3 @@ knitr::kable(mtcars_radar,format="markdown")
 |31 |Maserati Bora  | 0.1957447| 1.0| 0.5734597| 1.0000000| 0.3594470| 0.5259524| 0.0119048|  0|  1|
 |32 |Volvo 142E     | 0.4680851| 0.0| 0.1244699| 0.2014134| 0.6221198| 0.3239581| 0.4880952|  1|  1|
 
-## Custom fonts
-
-This package requires the Airbnb font and the extrafont package.
-
-
-```r
-# configured to work on a Mac, change directory to Unix or Windows
-download.file("https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Light%203.46.45%20PM.ttf", "~/Circular Air-Light 3.46.45 PM.ttf", method="curl")
-
-extrafont::font_import(pattern = 'Circular', prompt=FALSE)
-```
