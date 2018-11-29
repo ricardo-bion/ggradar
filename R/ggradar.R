@@ -42,7 +42,8 @@ ggradar <- function(plot.data,
                              plot.legend=if (nrow(plot.data)>1) TRUE else FALSE,
                              legend.title="",
                              plot.title="",
-                             legend.text.size=14 ) {
+                             legend.text.size=14,
+                             legend.position = "left") {
 
   library(ggplot2)
 
@@ -273,7 +274,7 @@ base <- base +  geom_path(data=gridline$max$path,aes(x=x,y=y),
   
   base <- base + theme(legend.key.width=unit(3,"line")) + theme(text = element_text(size = 20,
                                                                                       family = font.radar)) +
-  theme(legend.text = element_text(size = legend.text.size), legend.position="left") +
+  theme(legend.text = element_text(size = legend.text.size), legend.position = legend.position) +
   theme(legend.key.height=unit(2,"line")) +
   scale_colour_manual(values=colour_values) +
   theme(text=element_text(family=font.radar)) + 
