@@ -1,70 +1,66 @@
 ---
 title: "ggradar"
 output:
-  html_document:
-    fig_height: 6
-    fig_width: 12
-    keep_md: yes
+  github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, dpi=300)
-
-options(warn=-1)
-
+knitr::opts_chunk$set(echo = TRUE, dpi = 300, message = FALSE, warning = FALSE, error = FALSE)
 ```
 
-
-ggradar allows you to build radar charts with ggplot2. This package is based on [Paul Williamson's](http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html) code, with new aesthetics and compatibility with ggplot2 2.0.
+`ggradar` allows you to build radar charts with ggplot2. This package is based on [Paul Williamson's](http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html) code, with new aesthetics and compatibility with ggplot2 2.0.
 
 It was inspired by [d3radaR](http://www.buildingwidgets.com/blog/2015/12/9/week-49-d3radarr), an htmlwidget built by [timelyportfolio](https://github.com/timelyportfolio).
 
-
-## Install ggradar
+## Install `ggradar`
 
 ```{r, eval=FALSE}
-
 devtools::install_github("ricardo-bion/ggradar", 
-                          dependencies=TRUE)
-
+                          dependencies = TRUE)
 ```
 
-## Use ggradar
+## Use `ggradar`
 
 ```{r, fig.width=15, fig.height=10}
 library(ggradar)
-
-suppressPackageStartupMessages(library(dplyr))
+library(dplyr)
 library(scales)
 library(tibble)
 
-mtcars %>%
-     rownames_to_column( var = "group" ) %>%
-     mutate_at(vars(-group),funs(rescale)) %>%
-     tail(4) %>% select(1:10) -> mtcars_radar
-
-ggradar(mtcars_radar) 
-
+mtcars_radar <- mtcars %>% 
+  as_tibble(rownames = "group") %>% 
+  mutate_at(vars(-group), rescale) %>% 
+  tail(4) %>% 
+  select(1:10)
 ```
 
+```{r, echo = FALSE}
+knitr::kable(mtcars_radar,format = "markdown") 
+```
 
 ```{r}
-
-knitr::kable(mtcars_radar,format="markdown") 
-
+ggradar(mtcars_radar)
 ```
 
 ## Custom fonts
 
-This package requires the Airbnb font and the extrafont package.
+You can also use custom font family in `ggradar`. In the following example, you would like to use Airbnb's font family named 'Circular Air' by first downloading it, installing it in your computer (not shown), and then registering it to R using `extrafont` package.
 
-```{r, eval=FALSE}
-
+```{r, eval = FALSE}
 # configured to work on a Mac, change directory to Unix or Windows
-download.file("https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Light%203.46.45%20PM.ttf", "~/Circular Air-Light 3.46.45 PM.ttf", method="curl")
+download.file("https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Light%203.46.45%20PM.ttf", "~/Circular Air-Light 3.46.45 PM.ttf", method = "curl")
 
-extrafont::font_import(pattern = 'Circular', prompt=FALSE)
-
-
-
+extrafont::font_import(pattern = 'Circular', prompt = FALSE)
 ```
+
+Following the same procedure as in the previous example, you can then use 'Circular Air' font family in `ggradar` by adjusting `font.radar` argument. The following example shows that `ggradar` is also can be used in pipe `%>%`.
+
+```{r, fig.width=15, fig.height=10}
+mtcars %>% 
+  as_tibble(rownames = "group") %>% 
+  mutate_at(vars(-group), rescale) %>% 
+  tail(4) %>% 
+  select(1:10) %>% 
+  ggradar(font.radar = "Circular Air")
+```
+
