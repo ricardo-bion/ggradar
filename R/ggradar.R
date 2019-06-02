@@ -1,14 +1,72 @@
 #' ggradar
-#' @author Ricardo Bion
-#' @export ggradar
+#' 
+#' @param plot.data dataframe comprising one row per group
+#' @param base.size text size
+#' @param font.radar text font family
+#' @param values.radar values to print at minimum, 'average', and maximum gridlines
+#' @param axis.labels  names of axis labels if other than column names supplied via plot.data
+#' @param grid.min value at which mininum grid line is plotted
+#' @param grid.mid value at which 'average' grid line is plotted
+#' @param grid.max value at which maximum grid line is plotted 
+#' @param centre.y value of y at centre of plot
+#' @param plot.extent.x.sf controls relative size of plot horizontally
+#' @param plot.extent.y.sf controls relative size of plot vertically
+#' @param x.centre.range controls axis label alignment
+#' @param label.centre.y whether value of y at centre of plot should be labelled
+#' @param grid.line.width width of gridline
+#' @param gridline.min.linetype line type of minimum gridline
+#' @param gridline.mid.linetype line type of 'average' gridline
+#' @param gridline.max.linetype line type of maximum gridline
+#' @param gridline.min.colour colour of minimum gridline
+#' @param gridline.mid.colour colour of 'average' gridline
+#' @param gridline.max.colour colour of maximum gridline
+#' @param grid.label.size text size of gridline label
+#' @param gridline.label.offset displacement to left/right of central vertical axis
+#' @param label.gridline.min whether or not to label the mininum gridline
+#' @param label.gridline.mid whether or not to label the 'mininum'average' gridline
+#' @param label.gridline.max whether or not to label the maximum gridline
+#' @param axis.label.offset vertical displacement of axis labels from maximum grid line, measured relative to circle diameter
+#' @param axis.label.size text size of axis label
+#' @param axis.line.colour colour of axis line
+#' @param group.line.width line width of group
+#' @param group.point.size point size of group
+#' @param group.colours colour of group
+#' @param background.circle.colour colour of background circle/radar
+#' @param background.circle.transparency transparency of background circle/radar
+#' @param plot.legend whether to include a plot legend
+#' @param legend.title title of legend
+#' @param plot.title title of radar plot
+#' @param legend.text.size text size in legend
+#' @param legend.position position of legend, valid values are "top", "right", "bottom", "left"
 #'
+#' @import ggplot2
+#' @return a ggplot object
+#' 
+#' @name ggradar-package
+#' 
 #' @export
-# most of the code is from http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html
-
-
+#'
+#' @source 
+#' Most of the code is from \url{http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html}.
+#' 
+#' @examples
+#' \dontrun{
+#' library(ggradar)
+#' library(dplyr)
+#' library(scales)
+#' library(tibble)
+#' 
+#' mtcars_radar <- mtcars %>% 
+#'   as_tibble(rownames = "group") %>% 
+#'   mutate_at(vars(-group), rescale) %>% 
+#'   tail(4) %>% 
+#'   select(1:10)
+#' mtcars_radar
+#' ggradar(mtcars_radar)
+#' }
 ggradar <- function(plot.data,
                     base.size = 15,
-                    font.radar = "Arial",
+                    font.radar = "sans",
                     values.radar = c("0%", "50%", "100%"),
                     axis.labels = colnames(plot.data)[-1],
                     grid.min = 0, # 10,
@@ -50,7 +108,7 @@ ggradar <- function(plot.data,
   plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
   names(plot.data)[1] <- "group"
 
-  var.names <- colnames(plot.data)[-1] #' Short version of variable names
+  var.names <- colnames(plot.data)[-1] # Short version of variable names
   # axis.labels [if supplied] is designed to hold 'long version' of variable names
   # with line-breaks indicated using \n
 
@@ -60,89 +118,13 @@ ggradar <- function(plot.data,
 
   # Check supplied data makes sense
   if (length(axis.labels) != ncol(plot.data) - 1) {
-    return("Error: 'axis.labels' contains the wrong number of axis labels")
+    stop("'axis.labels' contains the wrong number of axis labels", call. = FALSE)
   }
   if (min(plot.data[, -1]) < centre.y) {
-    return("Error: plot.data' contains value(s) < centre.y")
+    stop("plot.data' contains value(s) < centre.y", call. = FALSE)
   }
   if (max(plot.data[, -1]) > grid.max) {
-    return("Error: 'plot.data' contains value(s) > grid.max")
-  }
-  # Declare required internal functions
-
-  CalculateGroupPath <- function(df) {
-    # Converts variable values into a set of radial x-y coordinates
-    # Code adapted from a solution posted by Tony M to
-    # http://stackoverflow.com/questions/9614433/creating-radar-chart-a-k-a-star-plot-spider-plot-using-ggplot2-in-r
-    # Args:
-    #  df: Col 1 -  group ('unique' cluster / group ID of entity)
-    #      Col 2-n:  v1.value to vn.value - values (e.g. group/cluser mean or median) of variables v1 to v.n
-
-    path <- df[, 1]
-
-    ## find increment
-    angles <- seq(from = 0, to = 2 * pi, by = (2 * pi) / (ncol(df) - 1))
-    ## create graph data frame
-    graphData <- data.frame(seg = "", x = 0, y = 0)
-    graphData <- graphData[-1, ]
-
-    for (i in levels(path)) {
-      pathData <- subset(df, df[, 1] == i)
-      for (j in c(2:ncol(df))) {
-        # pathData[,j]= pathData[,j]
-
-
-        graphData <- rbind(graphData, data.frame(
-          group = i,
-          x = pathData[, j] * sin(angles[j - 1]),
-          y = pathData[, j] * cos(angles[j - 1])
-        ))
-      }
-      ## complete the path by repeating first pair of coords in the path
-      graphData <- rbind(graphData, data.frame(
-        group = i,
-        x = pathData[, 2] * sin(angles[1]),
-        y = pathData[, 2] * cos(angles[1])
-      ))
-    }
-    # Make sure that name of first column matches that of input data (in case !="group")
-    colnames(graphData)[1] <- colnames(df)[1]
-    graphData # data frame returned by function
-  }
-  CaclulateAxisPath <- function(var.names, min, max) {
-    # Caculates x-y coordinates for a set of radial axes (one per variable being plotted in radar plot)
-    # Args:
-    # var.names - list of variables to be plotted on radar plot
-    # min - MININUM value required for the plotted axes (same value will be applied to all axes)
-    # max - MAXIMUM value required for the plotted axes (same value will be applied to all axes)
-    # var.names <- c("v1","v2","v3","v4","v5")
-    n.vars <- length(var.names) # number of vars (axes) required
-    # Cacluate required number of angles (in radians)
-    angles <- seq(from = 0, to = 2 * pi, by = (2 * pi) / n.vars)
-    # calculate vectors of min and max x+y coords
-    min.x <- min * sin(angles)
-    min.y <- min * cos(angles)
-    max.x <- max * sin(angles)
-    max.y <- max * cos(angles)
-    # Combine into a set of uniquely numbered paths (one per variable)
-    axisData <- NULL
-    for (i in 1:n.vars) {
-      a <- c(i, min.x[i], min.y[i])
-      b <- c(i, max.x[i], max.y[i])
-      axisData <- rbind(axisData, a, b)
-    }
-    # Add column names + set row names = row no. to allow conversion into a data frame
-    colnames(axisData) <- c("axis.no", "x", "y")
-    rownames(axisData) <- seq(1:nrow(axisData))
-    # Return calculated axis paths
-    as.data.frame(axisData)
-  }
-  funcCircleCoords <- function(center = c(0, 0), r = 1, npoints = 100) {
-    # Adapted from Joran's response to http://stackoverflow.com/questions/6862742/draw-a-circle-with-ggplot2
-    tt <- seq(0, 2 * pi, length.out = npoints)
-    xx <- center[1] + r * cos(tt)
-    yy <- center[2] + r * sin(tt)
-    return(data.frame(x = xx, y = yy))
+    stop("'plot.data' contains value(s) > grid.max", call. = FALSE)
   }
 
   ### Convert supplied data into plottable format
@@ -159,7 +141,7 @@ ggradar <- function(plot.data,
   # print(group$path)
   # (c) Calculate coordinates required to plot radial variable axes
   axis <- NULL
-  axis$path <- CaclulateAxisPath(var.names, grid.min + abs(centre.y), grid.max + abs(centre.y))
+  axis$path <- CalculateAxisPath(var.names, grid.min + abs(centre.y), grid.max + abs(centre.y))
   # print(axis$path)
   # (d) Create file containing axis labels + associated plotting coordinates
   # Labels
@@ -278,7 +260,6 @@ ggradar <- function(plot.data,
     colour = axis.line.colour
   )
 
-
   # ... + group (cluster) 'paths'
   base <- base + geom_path(
     data = group$path, aes(x = x, y = y, group = group, colour = group),
@@ -287,7 +268,6 @@ ggradar <- function(plot.data,
 
   # ... + group points (cluster data)
   base <- base + geom_point(data = group$path, aes(x = x, y = y, group = group, colour = group), size = group.point.size)
-
 
   # ... + amend Legend title
   if (plot.legend == TRUE) base <- base + labs(colour = legend.title, size = legend.text.size)
