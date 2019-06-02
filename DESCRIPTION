@@ -1,6 +1,6 @@
 Package: ggradar
 Title: Create radar charts using ggplot2
-Version: 0.1
+Version: 0.2
 Authors@R:
     person(given = "Ricardo",
            family = "Bion",
