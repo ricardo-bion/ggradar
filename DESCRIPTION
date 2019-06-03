@@ -1,20 +1,17 @@
-Repository: CRAN_ggradar
 Package: ggradar
-Type: Package
-Title: ggradar
-Version: 0.1
-Date: 2016-02-06
-Author: Ricardo Bion
-Maintainer: Ricardo Bion <ricardo.bion@airbnb.com>
-Description: ggradar radar charts for ggplot2
+Title: Create radar charts using ggplot2
+Version: 0.2
+Authors@R:
+    person(given = "Ricardo",
+           family = "Bion",
+           role = c("aut", "cre"),
+           email = "ricardo.bion@airbnb.com")
+Description: This package exports the functionality of ggplot2 to create radar charts.
 License: GPL
-LazyData: true
 Imports:
-    dplyr,
-    ggplot2,
-    magrittr,
-    scales,
-    tidyr,
-    extrafont,
-    extrafontdb
-RoxygenNote: 5.0.1
+    ggplot2
+Suggests: 
+    testthat (>= 2.1.0)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
