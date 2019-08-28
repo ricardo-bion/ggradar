@@ -1,5 +1,5 @@
 #' ggradar
-#' 
+#'
 #' @param plot.data dataframe comprising one row per group
 #' @param base.size text size
 #' @param font.radar text font family
@@ -7,7 +7,7 @@
 #' @param axis.labels  names of axis labels if other than column names supplied via plot.data
 #' @param grid.min value at which mininum grid line is plotted
 #' @param grid.mid value at which 'average' grid line is plotted
-#' @param grid.max value at which maximum grid line is plotted 
+#' @param grid.max value at which maximum grid line is plotted
 #' @param centre.y value of y at centre of plot
 #' @param plot.extent.x.sf controls relative size of plot horizontally
 #' @param plot.extent.y.sf controls relative size of plot vertically
@@ -41,25 +41,25 @@
 #'
 #' @import ggplot2
 #' @return a ggplot object
-#' 
+#'
 #' @name ggradar-package
-#' 
+#'
 #' @export
 #'
-#' @source 
+#' @source
 #' Most of the code is from \url{http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html}.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' library(ggradar)
 #' library(dplyr)
 #' library(scales)
 #' library(tibble)
-#' 
-#' mtcars_radar <- mtcars %>% 
-#'   as_tibble(rownames = "group") %>% 
-#'   mutate_at(vars(-group), rescale) %>% 
-#'   tail(4) %>% 
+#'
+#' mtcars_radar <- mtcars %>%
+#'   as_tibble(rownames = "group") %>%
+#'   mutate_at(vars(-group), rescale) %>%
+#'   tail(4) %>%
 #'   select(1:10)
 #' mtcars_radar
 #' ggradar(mtcars_radar)
@@ -105,7 +105,10 @@ ggradar <- function(plot.data,
 
   plot.data <- as.data.frame(plot.data)
 
-  plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
+  if(!is.factor(plot.data[, 1])) {
+    plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
+  }
+
   names(plot.data)[1] <- "group"
 
   var.names <- colnames(plot.data)[-1] # Short version of variable names
