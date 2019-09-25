@@ -38,5 +38,6 @@ CalculateGroupPath <- function(df) {
   }
   # Make sure that name of first column matches that of input data (in case !="group")
   colnames(graphData)[1] <- colnames(df)[1]
+  graphData$group <- factor(graphData$group, levels=levels(df[, 1]) ) # keep group order
   graphData # data frame returned by function
 }
