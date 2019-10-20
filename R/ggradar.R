@@ -309,6 +309,10 @@ ggradar <- function(plot.data,
     scale_colour_manual(values = colour_values) +
     theme(text = element_text(family = font.radar)) +
     theme(legend.title = element_blank())
+  
+  if(legend.title != "") {
+     base <- base + theme(legend.title = element_text())
+   }
 
   if (plot.title != "") {
     base <- base + ggtitle(plot.title)
