@@ -203,7 +203,7 @@ ggradar <- function(plot.data,
       legend.key = element_rect(linetype = "blank")
     )
 
-  if (plot.legend == FALSE) theme_clear <- theme_clear + theme(legend.position = "none")
+  if (plot.legend == FALSE) legend.position = "none"
 
   # Base-layer = axis labels + plot extent
   # [need to declare plot extent as well, since the axis labels don't always
