@@ -9,26 +9,48 @@
 Most of the code is from \url{http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html}.
 }
 \usage{
-ggradar(plot.data, base.size = 15, font.radar = "sans",
+ggradar(
+  plot.data,
+  base.size = 15,
+  font.radar = "sans",
   values.radar = c("0\%", "50\%", "100\%"),
-  axis.labels = colnames(plot.data)[-1], grid.min = 0,
-  grid.mid = 0.5, grid.max = 1, centre.y = grid.min - ((1/9) *
-  (grid.max - grid.min)), plot.extent.x.sf = 1, plot.extent.y.sf = 1.2,
+  axis.labels = colnames(plot.data)[-1],
+  grid.min = 0,
+  grid.mid = 0.5,
+  grid.max = 1,
+  centre.y = grid.min - ((1/9) * (grid.max - grid.min)),
+  plot.extent.x.sf = 1,
+  plot.extent.y.sf = 1.2,
   x.centre.range = 0.02 * (grid.max - centre.y),
-  label.centre.y = FALSE, grid.line.width = 0.5,
+  label.centre.y = FALSE,
+  grid.line.width = 0.5,
   gridline.min.linetype = "longdash",
   gridline.mid.linetype = "longdash",
-  gridline.max.linetype = "longdash", gridline.min.colour = "grey",
-  gridline.mid.colour = "#007A87", gridline.max.colour = "grey",
-  grid.label.size = 6, gridline.label.offset = -0.1 * (grid.max -
-  centre.y), label.gridline.min = TRUE, label.gridline.mid = TRUE,
-  label.gridline.max = TRUE, axis.label.offset = 1.15,
-  axis.label.size = 5, axis.line.colour = "grey",
-  group.line.width = 1.5, group.point.size = 6, group.colours = NULL,
+  gridline.max.linetype = "longdash",
+  gridline.min.colour = "grey",
+  gridline.mid.colour = "#007A87",
+  gridline.max.colour = "grey",
+  grid.label.size = 6,
+  gridline.label.offset = -0.1 * (grid.max - centre.y),
+  label.gridline.min = TRUE,
+  label.gridline.mid = TRUE,
+  label.gridline.max = TRUE,
+  axis.label.offset = 1.15,
+  axis.label.size = 5,
+  axis.line.colour = "grey",
+  group.line.width = 1.5,
+  group.point.size = 6,
+  group.colours = NULL,
   background.circle.colour = "#D7D6D1",
-  background.circle.transparency = 0.2, plot.legend = if
-  (nrow(plot.data) > 1) TRUE else FALSE, legend.title = "",
-  plot.title = "", legend.text.size = 14, legend.position = "left")
+  background.circle.transparency = 0.2,
+  plot.legend = if (nrow(plot.data) > 1) TRUE else FALSE,
+  legend.title = "",
+  plot.title = "",
+  legend.text.size = 14,
+  legend.position = "left",
+  fill = FALSE,
+  fill.alpha = 0.5
+)
 }
 \arguments{
 \item{plot.data}{dataframe comprising one row per group}
@@ -106,6 +128,10 @@ ggradar(plot.data, base.size = 15, font.radar = "sans",
 \item{legend.text.size}{text size in legend}
 
 \item{legend.position}{position of legend, valid values are "top", "right", "bottom", "left"}
+
+\item{fill}{whether to fill polygons}
+
+\item{fill.alpha}{if filling polygons, transparency values}
 }
 \value{
 a ggplot object
@@ -120,10 +146,10 @@ library(dplyr)
 library(scales)
 library(tibble)
 
-mtcars_radar <- mtcars \%>\% 
-  as_tibble(rownames = "group") \%>\% 
-  mutate_at(vars(-group), rescale) \%>\% 
-  tail(4) \%>\% 
+mtcars_radar <- mtcars \%>\%
+  as_tibble(rownames = "group") \%>\%
+  mutate_at(vars(-group), rescale) \%>\%
+  tail(4) \%>\%
   select(1:10)
 mtcars_radar
 ggradar(mtcars_radar)
