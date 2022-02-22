@@ -38,6 +38,8 @@
 #' @param plot.title title of radar plot
 #' @param legend.text.size text size in legend
 #' @param legend.position position of legend, valid values are "top", "right", "bottom", "left"
+#' @param fill whether to fill polygons
+#' @param fill.alpha if filling polygons, transparency values
 #'
 #' @import ggplot2
 #' @return a ggplot object
@@ -101,8 +103,10 @@ ggradar <- function(plot.data,
                     legend.title = "",
                     plot.title = "",
                     legend.text.size = 14,
-                    legend.position = "left") {
 
+                    legend.position = "left",
+                    fill = FALSE,
+                    fill.alpha = 0.5) {
   plot.data <- as.data.frame(plot.data)
 
   if(!is.factor(plot.data[, 1])) {
@@ -272,6 +276,12 @@ ggradar <- function(plot.data,
   # ... + group points (cluster data)
   base <- base + geom_point(data = group$path, aes(x = x, y = y, group = group, colour = group), size = group.point.size)
 
+  # ... + group (cluster) fills
+  if(fill == TRUE) {
+    base <- base + geom_polygon(data = group$path, aes(x = x, y = y, group = group, fill = group), alpha = fill.alpha)
+  }
+
+
   # ... + amend Legend title
   if (plot.legend == TRUE) base <- base + labs(colour = legend.title, size = legend.text.size)
 
@@ -309,10 +319,16 @@ ggradar <- function(plot.data,
     scale_colour_manual(values = colour_values) +
     theme(text = element_text(family = font.radar)) +
     theme(legend.title = element_blank())
-  
+
+
+  if(isTRUE(fill)) {
+    base <- base +
+      scale_fill_manual(values = colour_values, guide = "none")
+  }
+
   if(legend.title != "") {
-     base <- base + theme(legend.title = element_text())
-   }
+    base <- base + theme(legend.title = element_text())
+  }
 
   if (plot.title != "") {
     base <- base + ggtitle(plot.title)
