@@ -1,7 +1,7 @@
 ggradar
 ================
 
-`ggradar` allows you to build radar charts with ggplot2. This package is
+`ggradar` allows you to build radar charts (aka spider charts) with ggplot2. This package is
 based on [Paul
 Williamson’s](http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html)
 code, with new aesthetics and compatibility with ggplot2 2.0.
