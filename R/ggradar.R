@@ -113,8 +113,6 @@ ggradar <- function(plot.data,
     plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
   }
 
-  names(plot.data)[1] <- "group"
-
   var.names <- colnames(plot.data)[-1] # Short version of variable names
   # axis.labels [if supplied] is designed to hold 'long version' of variable names
   # with line-breaks indicated using \n
@@ -267,18 +265,20 @@ ggradar <- function(plot.data,
     colour = axis.line.colour
   )
 
+  theGroupName <- names(group$path[1])
+
   # ... + group (cluster) 'paths'
   base <- base + geom_path(
-    data = group$path, aes(x = x, y = y, group = group, colour = group),
+    data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName),
     size = group.line.width
   )
 
   # ... + group points (cluster data)
-  base <- base + geom_point(data = group$path, aes(x = x, y = y, group = group, colour = group), size = group.point.size)
+  base <- base + geom_point(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.point.size)
 
   # ... + group (cluster) fills
   if(fill == TRUE) {
-    base <- base + geom_polygon(data = group$path, aes(x = x, y = y, group = group, fill = group), alpha = fill.alpha)
+    base <- base + geom_polygon(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, fill = theGroupName), alpha = fill.alpha)
   }
 
 
