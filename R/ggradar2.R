@@ -1,4 +1,4 @@
-ggradarpolygon <- function(
+ggradar <- function(
     data, 
     gridline.value = seq(20, 100, 20), 
     gridline.color = c(rep("gray", 4), "darkgray"), 
