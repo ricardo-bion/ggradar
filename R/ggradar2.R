@@ -1,5 +1,9 @@
 ggradar <- function(
     data, 
+    data.max = data |> 
+      select(-1) |> 
+      max(), # the maximum value which other values should be divided by to get 
+    # a percentage 
     gridline.value = seq(20, 100, 20), 
     gridline.color = c(rep("gray", 4), "darkgray"), 
     gridline.linewidth = c(rep(1, 4), 2), 
@@ -37,6 +41,10 @@ ggradar <- function(
   }
   library(RColorBrewer)
 
+  data <- data |> 
+    select(-1) / 
+    data.max *
+    100
   two_pi <- 2 * pi
   n_axis <- axis.label |> 
     length()
@@ -109,7 +117,7 @@ ggradar <- function(
   radar_value1 <- data |> 
     pull(2)
   radar_value <- data |> 
-    select(2:length(data)) |> 
+    select(-1) |> 
     mutate(value_last2 = radar_value1, value_last1 = radar_value1) |> 
     t()
   sin_radar_angle_n_state <- radar_angle |> 
