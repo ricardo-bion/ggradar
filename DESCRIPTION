@@ -9,7 +9,6 @@ Authors@R:
 Description: This package exports the functionality of ggplot2 to create radar charts.
 License: GPL
 Imports:
-    forcats,
     ggplot2
 Suggests: 
     testthat (>= 2.1.0)
