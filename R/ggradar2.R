@@ -1,4 +1,4 @@
-ggradar <- function(
+ggradar2 <- function(
     data, 
     data.max = data |> 
       select(-1) |> 
