@@ -3,22 +3,36 @@ library(dplyr)
 library(scales)
 library(tibble)
 
-df = data.frame(
-  NAME = 'IGNORED',
-  A = 20,
-  B = 30,
-  C = 80,
-  D = 50,
-  E = 60
-)
 
+# Example 1:
+df = data.frame(
+  NAME = c('G1', 'G2', 'G3'),
+  A = c(0.2, 0.4, 0.5),
+  B = c(0.3, 0.6, 0.3),
+  C = c(0.7, 0.3, 0.5),
+  D = c(0.4, 0.8, 0.2),
+  E = c(0.5, 0.6, 0.3)
+)
+ggradar(df)
+
+
+# Example 2:
+df = data.frame(
+  NAME = c('G1', 'G2', 'G3'),
+  A = c(2, 4, 5),
+  B = c(3, 6, 3),
+  C = c(7, 3, 5),
+  D = c(4, 8, 2),
+  E = c(5, 6, 3)
+)
 ggradar(df,
+        values.radar = c("0", "2", "4", "6", "8", "10"),
         grid.min = 0,
-        grid.n2 = 20,
-        grid.n3 = 40,
-        grid.n4 = 60,
-        grid.n5 = 80,
-        grid.max = 100)
+        grid.n2 = 2,
+        grid.n3 = 4,
+        grid.n4 = 6,
+        grid.n5 = 8,
+        grid.max = 10)
 
 ggradar <- function(plot.data,
                     base.size = 15,
@@ -62,7 +76,7 @@ ggradar <- function(plot.data,
                     axis.label.size = 5,
                     axis.line.colour = "grey",
                     group.line.width = 1.5,
-                    group.point.size = 6,
+                    group.point.size = 3,
                     group.colours = NULL,
                     background.circle.colour = "#D7D6D1",
                     background.circle.transparency = 0.2,
@@ -73,7 +87,7 @@ ggradar <- function(plot.data,
 
                     legend.position = "left",
                     fill = FALSE,
-                    fill.alpha = 0.5) {
+                    fill.alpha = 0.3) {
   
   # Functions
   #
