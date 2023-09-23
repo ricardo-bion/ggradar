@@ -3,36 +3,90 @@ library(dplyr)
 library(scales)
 library(tibble)
 
+# # Examples
+# #
+# #
 
-# Example 1:
-df = data.frame(
-  NAME = c('G1', 'G2', 'G3'),
-  A = c(0.2, 0.4, 0.5),
-  B = c(0.3, 0.6, 0.3),
-  C = c(0.7, 0.3, 0.5),
-  D = c(0.4, 0.8, 0.2),
-  E = c(0.5, 0.6, 0.3)
-)
-ggradar(df)
+# # Example 1:
+# df <- data.frame(
+#   NAME = 'G1',
+#   A = 0.4,
+#   B = 0.8,
+#   C = 0.5,
+#   D = 0.8,
+#   E = 0.5
+# )
+# ggradar(df)
+
+# # Example 2:
+# df <- data.frame(
+#   NAME = c('G1', 'G2', 'G3'),
+#   A = c(0.2, 0.4, 0.5),
+#   B = c(0.3, 0.6, 0.3),
+#   C = c(0.7, 0.3, 0.5),
+#   D = c(0.4, 0.8, 0.2),
+#   E = c(0.5, 0.6, 0.3)
+# )
+# ggradar(df)
 
 
-# Example 2:
-df = data.frame(
-  NAME = c('G1', 'G2', 'G3'),
-  A = c(2, 4, 5),
-  B = c(3, 6, 3),
-  C = c(7, 3, 5),
-  D = c(4, 8, 2),
-  E = c(5, 6, 3)
-)
-ggradar(df,
-        values.radar = c("0", "2", "4", "6", "8", "10"),
-        grid.min = 0,
-        grid.n2 = 2,
-        grid.n3 = 4,
-        grid.n4 = 6,
-        grid.n5 = 8,
-        grid.max = 10)
+# # Example 3:
+# df <- data.frame(
+#   NAME = c('G1', 'G2', 'G3'),
+#   A = c(2, 4, 5),
+#   B = c(3, 6, 3),
+#   C = c(7, 3, 5),
+#   D = c(4, 8, 2),
+#   E = c(5, 6, 3)
+# )
+# ggradar(df,
+#         values.radar = c("0", "2", "4", "6", "8", "10"),
+#         grid.min = 0,
+#         grid.n2 = 2,
+#         grid.n3 = 4,
+#         grid.n4 = 6,
+#         grid.n5 = 8,
+#         grid.max = 10)
+
+# # Example 4: Default GGRadar plot
+# df <- data.frame(
+#   NAME = 'G1',
+#   A = 0.4,
+#   B = 0.8,
+#   C = 0.5,
+#   D = 0.8,
+#   E = 0.5
+# )
+# ggradar(df,
+#         # radar values
+#         values.radar = c("0%", "50%", rep("none", 3), "100%"),
+        
+#         # grids
+#         grid.min = 0,
+#         grid.n2 = 0.5,
+#         grid.max = 1,
+        
+#         # grid labels
+#         label.gridline.n3 = FALSE,
+#         label.gridline.n4 = FALSE,
+#         label.gridline.n5 = FALSE,
+#         grid.label.color = "#000000",
+#         grid.label.size = 6,
+#         gridline.label.offset = -0.1 * (1 - 0),
+        
+#         # grid lines
+#         gridline.n3 = FALSE,
+#         gridline.n4 = FALSE,
+#         gridline.n5 = FALSE,
+#         gridline.n2.colour = "#007A87",
+        
+#          # group
+#         group.point.size = 6)
+
+# #
+# #
+# # End Examples
+
 
 ggradar <- function(plot.data,
                     base.size = 15,
@@ -45,6 +99,12 @@ ggradar <- function(plot.data,
                     grid.n4 = 0.6, # 60,
                     grid.n5 = 0.8, # 80,
                     grid.max = 1, # 100,
+                    gridline.min = TRUE,
+                    gridline.n2 = TRUE,
+                    gridline.n3 = TRUE,
+                    gridline.n4 = TRUE,
+                    gridline.n5 = TRUE,
+                    gridline.max = TRUE,
                     centre.y = grid.min - ((1 / 9) * (grid.max - grid.min)),
                     plot.extent.x.sf = 1,
                     plot.extent.y.sf = 1.2,
@@ -299,30 +359,42 @@ ggradar <- function(plot.data,
     scale_y_continuous(limits = c(-plot.extent.y, plot.extent.y))
 
   # ... + circular grid-lines at 'min', 'n2' and 'max' y-axis values
-  base <- base + geom_path(
-    data = gridline$min$path, aes(x = x, y = y),
-    lty = gridline.min.linetype, colour = gridline.min.colour, size = grid.line.width
-  )
-  base <- base + geom_path(
-    data = gridline$n2$path, aes(x = x, y = y),
-    lty = gridline.n2.linetype, colour = gridline.n2.colour, size = grid.line.width
-  )
-  base <- base + geom_path(
-    data = gridline$n3$path, aes(x = x, y = y),
-    lty = gridline.n3.linetype, colour = gridline.n3.colour, size = grid.line.width
-  )
-  base <- base + geom_path(
-    data = gridline$n4$path, aes(x = x, y = y),
-    lty = gridline.n4.linetype, colour = gridline.n4.colour, size = grid.line.width
-  )
-  base <- base + geom_path(
-    data = gridline$n5$path, aes(x = x, y = y),
-    lty = gridline.n5.linetype, colour = gridline.n5.colour, size = grid.line.width
-  )
-  base <- base + geom_path(
-    data = gridline$max$path, aes(x = x, y = y),
-    lty = gridline.max.linetype, colour = gridline.max.colour, size = grid.line.width
-  )
+  if(gridline.min == TRUE) {
+    base <- base + geom_path(
+      data = gridline$min$path, aes(x = x, y = y),
+      lty = gridline.min.linetype, colour = gridline.min.colour, size = grid.line.width
+    )
+  }
+  if(gridline.n2 == TRUE) {
+    base <- base + geom_path(
+      data = gridline$n2$path, aes(x = x, y = y),
+      lty = gridline.n2.linetype, colour = gridline.n2.colour, size = grid.line.width
+    )
+  }
+  if(gridline.n3 == TRUE) {
+    base <- base + geom_path(
+      data = gridline$n3$path, aes(x = x, y = y),
+      lty = gridline.n3.linetype, colour = gridline.n3.colour, size = grid.line.width
+    )
+  }
+  if(gridline.n4 == TRUE) {
+    base <- base + geom_path(
+      data = gridline$n4$path, aes(x = x, y = y),
+      lty = gridline.n4.linetype, colour = gridline.n4.colour, size = grid.line.width
+    )
+  }
+  if(gridline.n5 == TRUE) {
+    base <- base + geom_path(
+      data = gridline$n5$path, aes(x = x, y = y),
+      lty = gridline.n5.linetype, colour = gridline.n5.colour, size = grid.line.width
+    )
+  }
+  if(gridline.max == TRUE) {
+    base <- base + geom_path(
+      data = gridline$max$path, aes(x = x, y = y),
+      lty = gridline.max.linetype, colour = gridline.max.colour, size = grid.line.width
+    )
+  }
 
   # + axis labels for any vertical axes [abs(x)<=x.centre.range]
   base <- base + geom_text(
