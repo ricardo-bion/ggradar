@@ -1,78 +1,35 @@
-#' ggradar
-#'
-#' @param plot.data dataframe comprising one row per group
-#' @param base.size text size
-#' @param font.radar text font family
-#' @param values.radar values to print at minimum, 'average', and maximum gridlines
-#' @param axis.labels  names of axis labels if other than column names supplied via plot.data
-#' @param grid.min value at which mininum grid line is plotted
-#' @param grid.mid value at which 'average' grid line is plotted
-#' @param grid.max value at which maximum grid line is plotted
-#' @param centre.y value of y at centre of plot
-#' @param plot.extent.x.sf controls relative size of plot horizontally
-#' @param plot.extent.y.sf controls relative size of plot vertically
-#' @param x.centre.range controls axis label alignment
-#' @param label.centre.y whether value of y at centre of plot should be labelled
-#' @param grid.line.width width of gridline
-#' @param gridline.min.linetype line type of minimum gridline
-#' @param gridline.mid.linetype line type of 'average' gridline
-#' @param gridline.max.linetype line type of maximum gridline
-#' @param gridline.min.colour colour of minimum gridline
-#' @param gridline.mid.colour colour of 'average' gridline
-#' @param gridline.max.colour colour of maximum gridline
-#' @param grid.label.size text size of gridline label
-#' @param gridline.label.offset displacement to left/right of central vertical axis
-#' @param label.gridline.min whether or not to label the mininum gridline
-#' @param label.gridline.mid whether or not to label the 'mininum'average' gridline
-#' @param label.gridline.max whether or not to label the maximum gridline
-#' @param axis.label.offset vertical displacement of axis labels from maximum grid line, measured relative to circle diameter
-#' @param axis.label.size text size of axis label
-#' @param axis.line.colour colour of axis line
-#' @param group.line.width line width of group
-#' @param group.point.size point size of group
-#' @param group.colours colour of group
-#' @param background.circle.colour colour of background circle/radar
-#' @param background.circle.transparency transparency of background circle/radar
-#' @param plot.legend whether to include a plot legend
-#' @param legend.title title of legend
-#' @param plot.title title of radar plot
-#' @param legend.text.size text size in legend
-#' @param legend.position position of legend, valid values are "top", "right", "bottom", "left"
-#' @param fill whether to fill polygons
-#' @param fill.alpha if filling polygons, transparency values
-#'
-#' @import ggplot2
-#' @return a ggplot object
-#'
-#' @name ggradar-package
-#'
-#' @export
-#'
-#' @source
-#' Most of the code is from \url{http://rstudio-pubs-static.s3.amazonaws.com/5795_e6e6411731bb4f1b9cc7eb49499c2082.html}.
-#'
-#' @examples
-#' \dontrun{
-#' library(ggradar)
-#' library(dplyr)
-#' library(scales)
-#' library(tibble)
-#'
-#' mtcars_radar <- mtcars %>%
-#'   as_tibble(rownames = "group") %>%
-#'   mutate_at(vars(-group), rescale) %>%
-#'   tail(4) %>%
-#'   select(1:10)
-#' mtcars_radar
-#' ggradar(mtcars_radar)
-#' }
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(tibble)
+
+df = data.frame(
+  NAME = 'IGNORED',
+  A = 20,
+  B = 30,
+  C = 80,
+  D = 50,
+  E = 60
+)
+
+ggradar(df,
+        grid.min = 0,
+        grid.n2 = 20,
+        grid.n3 = 40,
+        grid.n4 = 60,
+        grid.n5 = 80,
+        grid.max = 100)
+
 ggradar <- function(plot.data,
                     base.size = 15,
                     font.radar = "sans",
-                    values.radar = c("0%", "50%", "100%"),
+                    values.radar = c("0%", "20%", "40%", "60%", "80%", "100%"),
                     axis.labels = colnames(plot.data)[-1],
                     grid.min = 0, # 10,
-                    grid.mid = 0.5, # 50,
+                    grid.n2 = 0.2, # 20,
+                    grid.n3 = 0.4, # 40,
+                    grid.n4 = 0.6, # 60,
+                    grid.n5 = 0.8, # 80,
                     grid.max = 1, # 100,
                     centre.y = grid.min - ((1 / 9) * (grid.max - grid.min)),
                     plot.extent.x.sf = 1,
@@ -81,15 +38,24 @@ ggradar <- function(plot.data,
                     label.centre.y = FALSE,
                     grid.line.width = 0.5,
                     gridline.min.linetype = "longdash",
-                    gridline.mid.linetype = "longdash",
+                    gridline.n2.linetype = "longdash",
+                    gridline.n3.linetype = "longdash",
+                    gridline.n4.linetype = "longdash",
+                    gridline.n5.linetype = "longdash",
                     gridline.max.linetype = "longdash",
                     gridline.min.colour = "grey",
-                    gridline.mid.colour = "#007A87",
+                    gridline.n2.colour = "grey",
+                    gridline.n3.colour = "grey",
+                    gridline.n4.colour = "grey",
+                    gridline.n5.colour = "grey",
                     gridline.max.colour = "grey",
                     grid.label.size = 6,
                     gridline.label.offset = -0.1 * (grid.max - centre.y),
                     label.gridline.min = TRUE,
-                    label.gridline.mid = TRUE,
+                    label.gridline.n2 = TRUE,
+                    label.gridline.n3 = TRUE,
+                    label.gridline.n4 = TRUE,
+                    label.gridline.n5 = TRUE,
                     label.gridline.max = TRUE,
                     axis.label.offset = 1.15,
                     axis.label.size = 5,
@@ -107,6 +73,82 @@ ggradar <- function(plot.data,
                     legend.position = "left",
                     fill = FALSE,
                     fill.alpha = 0.5) {
+  
+  # Functions
+  #
+  #
+  CalculateAxisPath <- function(var.names, min, max) {
+    # var.names <- c("v1","v2","v3","v4","v5")
+    n.vars <- length(var.names) # number of vars (axes) required
+    # Cacluate required number of angles (in radians)
+    angles <- seq(from = 0, to = 2 * pi, by = (2 * pi) / n.vars)
+    # calculate vectors of min and max x+y coords
+    min.x <- min * sin(angles)
+    min.y <- min * cos(angles)
+    max.x <- max * sin(angles)
+    max.y <- max * cos(angles)
+    # Combine into a set of uniquely numbered paths (one per variable)
+    axisData <- NULL
+    for (i in 1:n.vars) {
+      a <- c(i, min.x[i], min.y[i])
+      b <- c(i, max.x[i], max.y[i])
+      axisData <- rbind(axisData, a, b)
+    }
+    # Add column names + set row names = row no. to allow conversion into a data frame
+    colnames(axisData) <- c("axis.no", "x", "y")
+    rownames(axisData) <- seq(1:nrow(axisData))
+    # Return calculated axis paths
+    as.data.frame(axisData)
+  }
+  
+  CalculateGroupPath <- function(df) {
+    # Drop dead levels. This might happen if the data is filtered on the way
+    # into ggradar.
+    path <- forcats::fct_drop(df[, 1])
+    # set the name of the variable that will be used for grouping
+    theGroupName <- colnames(df)[1]
+    
+    ## find increment
+    nPathPoints <- ncol(df) - 1
+    angles <- seq(from = 0, to = 2 * pi, by = (2 * pi) / nPathPoints)
+    ## create graph data frame
+    nDataPoints <- ncol(df) * length(levels(path))
+    graphData <- data.frame(
+      seg = rep("",nDataPoints),
+      x = rep(0, nDataPoints),
+      y = rep(0, nDataPoints))
+    colnames(graphData)[1] <- theGroupName
+    
+    rowNum <- 1
+    for (i in 1:length(levels(path))) {
+      pathData <- subset(df, df[, 1] == levels(path)[i])
+      for (j in c(2:ncol(df))) {
+        graphData[rowNum,theGroupName] <- levels(path)[i]
+        graphData$x[rowNum] <- pathData[, j] * sin(angles[j - 1])
+        graphData$y[rowNum] <- pathData[, j] * cos(angles[j - 1])
+        rowNum <- rowNum + 1
+      }
+      ## complete the path by repeating first pair of coords in the path
+      graphData[rowNum,theGroupName] <- levels(path)[i]
+      graphData$x[rowNum] <- pathData[, 2] * sin(angles[1])
+      graphData$y[rowNum] <- pathData[, 2] * cos(angles[1])
+      rowNum <- rowNum + 1
+    }
+    # Make sure that name of first column matches that of input data (in case !="group")
+    graphData[,1] <- factor(graphData[,1], levels=levels(path) ) # keep group order
+    graphData # data frame returned by function
+  }
+  
+  funcCircleCoords <- function(center = c(0, 0), r = 1, npoints = 100) {
+    tt <- seq(0, 2 * pi, length.out = npoints)
+    xx <- center[1] + r * cos(tt)
+    yy <- center[2] + r * sin(tt)
+    return(data.frame(x = xx, y = yy))
+  }
+  #
+  #
+  # End Functions
+  
   plot.data <- as.data.frame(plot.data)
 
   if(!is.factor(plot.data[, 1])) {
@@ -168,10 +210,13 @@ ggradar <- function(plot.data,
   # print(axis$label)
   # (e) Create Circular grid-lines + labels
   # caclulate the cooridinates required to plot circular grid-lines for three user-specified
-  # y-axis values: min, mid and max [grid.min; grid.mid; grid.max]
+  # y-axis values: min, n2, n3, n4, n5 and max [grid.min; grid.n2; grid.n3; grid.n4; grid.n5; grid.max]
   gridline <- NULL
   gridline$min$path <- funcCircleCoords(c(0, 0), grid.min + abs(centre.y), npoints = 360)
-  gridline$mid$path <- funcCircleCoords(c(0, 0), grid.mid + abs(centre.y), npoints = 360)
+  gridline$n2$path <- funcCircleCoords(c(0, 0), grid.n2 + abs(centre.y), npoints = 360)
+  gridline$n3$path <- funcCircleCoords(c(0, 0), grid.n3 + abs(centre.y), npoints = 360)
+  gridline$n4$path <- funcCircleCoords(c(0, 0), grid.n4 + abs(centre.y), npoints = 360)
+  gridline$n5$path <- funcCircleCoords(c(0, 0), grid.n5 + abs(centre.y), npoints = 360)
   gridline$max$path <- funcCircleCoords(c(0, 0), grid.max + abs(centre.y), npoints = 360)
   # print(head(gridline$max$path))
   # gridline labels
@@ -183,13 +228,25 @@ ggradar <- function(plot.data,
     x = gridline.label.offset, y = grid.max + abs(centre.y),
     text = as.character(grid.max)
   )
-  gridline$mid$label <- data.frame(
-    x = gridline.label.offset, y = grid.mid + abs(centre.y),
-    text = as.character(grid.mid)
+  gridline$n2$label <- data.frame(
+    x = gridline.label.offset, y = grid.n2 + abs(centre.y),
+    text = as.character(grid.n2)
+  )
+  gridline$n3$label <- data.frame(
+    x = gridline.label.offset, y = grid.n3 + abs(centre.y),
+    text = as.character(grid.n3)
+  )
+  gridline$n4$label <- data.frame(
+    x = gridline.label.offset, y = grid.n4 + abs(centre.y),
+    text = as.character(grid.n4)
+  )
+  gridline$n5$label <- data.frame(
+    x = gridline.label.offset, y = grid.n5 + abs(centre.y),
+    text = as.character(grid.n5)
   )
   # print(gridline$min$label)
   # print(gridline$max$label)
-  # print(gridline$mid$label)
+  # print(gridline$n2$label)
   ### Start building up the radar plot
 
   # Declare 'theme_clear', with or without a plot legend as required by user
@@ -226,14 +283,26 @@ ggradar <- function(plot.data,
     scale_x_continuous(limits = c(-1.5 * plot.extent.x, 1.5 * plot.extent.x)) +
     scale_y_continuous(limits = c(-plot.extent.y, plot.extent.y))
 
-  # ... + circular grid-lines at 'min', 'mid' and 'max' y-axis values
+  # ... + circular grid-lines at 'min', 'n2' and 'max' y-axis values
   base <- base + geom_path(
     data = gridline$min$path, aes(x = x, y = y),
     lty = gridline.min.linetype, colour = gridline.min.colour, size = grid.line.width
   )
   base <- base + geom_path(
-    data = gridline$mid$path, aes(x = x, y = y),
-    lty = gridline.mid.linetype, colour = gridline.mid.colour, size = grid.line.width
+    data = gridline$n2$path, aes(x = x, y = y),
+    lty = gridline.n2.linetype, colour = gridline.n2.colour, size = grid.line.width
+  )
+  base <- base + geom_path(
+    data = gridline$n3$path, aes(x = x, y = y),
+    lty = gridline.n3.linetype, colour = gridline.n3.colour, size = grid.line.width
+  )
+  base <- base + geom_path(
+    data = gridline$n4$path, aes(x = x, y = y),
+    lty = gridline.n4.linetype, colour = gridline.n4.colour, size = grid.line.width
+  )
+  base <- base + geom_path(
+    data = gridline$n5$path, aes(x = x, y = y),
+    lty = gridline.n5.linetype, colour = gridline.n5.colour, size = grid.line.width
   )
   base <- base + geom_path(
     data = gridline$max$path, aes(x = x, y = y),
@@ -285,15 +354,24 @@ ggradar <- function(plot.data,
   # ... + amend Legend title
   if (plot.legend == TRUE) base <- base + labs(colour = legend.title, size = legend.text.size)
 
-  # ... + grid-line labels (max; mid; min)
+  # ... + grid-line labels (max; n2; min)
   if (label.gridline.min == TRUE) {
     base <- base + geom_text(aes(x = x, y = y, label = values.radar[1]), data = gridline$min$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
-  if (label.gridline.mid == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[2]), data = gridline$mid$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+  if (label.gridline.n2 == TRUE) {
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[2]), data = gridline$n2$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+  }
+  if (label.gridline.n3 == TRUE) {
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[3]), data = gridline$n3$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+  }
+  if (label.gridline.n4 == TRUE) {
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[4]), data = gridline$n4$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+  }
+  if (label.gridline.n5 == TRUE) {
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[5]), data = gridline$n5$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   if (label.gridline.max == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[3]), data = gridline$max$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[6]), data = gridline$max$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   # ... + centre.y label if required [i.e. value of y at centre of plot circle]
   if (label.centre.y == TRUE) {
