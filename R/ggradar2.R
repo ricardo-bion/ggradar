@@ -49,7 +49,8 @@ ggradar <- function(plot.data,
                     gridline.n4.colour = "grey",
                     gridline.n5.colour = "grey",
                     gridline.max.colour = "grey",
-                    grid.label.size = 6,
+                    grid.label.size = 4,
+                    grid.label.color = "#555555",
                     gridline.label.offset = -0.1 * (grid.max - centre.y),
                     label.gridline.min = TRUE,
                     label.gridline.n2 = TRUE,
@@ -356,22 +357,22 @@ ggradar <- function(plot.data,
 
   # ... + grid-line labels (max; n2; min)
   if (label.gridline.min == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[1]), data = gridline$min$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[1]), color = grid.label.color, data = gridline$min$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   if (label.gridline.n2 == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[2]), data = gridline$n2$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[2]), color = grid.label.color, data = gridline$n2$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   if (label.gridline.n3 == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[3]), data = gridline$n3$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[3]), color = grid.label.color, data = gridline$n3$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   if (label.gridline.n4 == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[4]), data = gridline$n4$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[4]), color = grid.label.color, data = gridline$n4$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   if (label.gridline.n5 == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[5]), data = gridline$n5$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[5]), color = grid.label.color, data = gridline$n5$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   if (label.gridline.max == TRUE) {
-    base <- base + geom_text(aes(x = x, y = y, label = values.radar[6]), data = gridline$max$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
+    base <- base + geom_text(aes(x = x, y = y, label = values.radar[6]), color = grid.label.color, data = gridline$max$label, size = grid.label.size * 0.8, hjust = 1, family = font.radar)
   }
   # ... + centre.y label if required [i.e. value of y at centre of plot circle]
   if (label.centre.y == TRUE) {
