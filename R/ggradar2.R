@@ -1,107 +1,107 @@
-library(ggplot2)
-library(dplyr)
-library(scales)
-library(tibble)
-
 # # Examples
 # #
 # #
 
-# Example 1:
-df <- data.frame(
-  NAME = 'G1',
-  A = 0.4,
-  B = 0.8,
-  C = 0.5,
-  D = 0.8,
-  E = 0.5
-)
-ggradar(df)
+# library(ggplot2)
+# library(dplyr)
+# library(scales)
+# library(tibble)
 
-# Example 2:
-df <- data.frame(
-  NAME = 'G1',
-  A = 123,
-  B = 65,
-  C = 157,
-  D = 181,
-  E = 99
-)
-ggradar(df,
-        # radar values
-        values.radar = c("0", "50", "100", "150", "", "200"),
-        grid.min = 0,
-        grid.n2 = 50,
-        grid.n3 = 100,
-        grid.n4 = 150,
-        grid.max = 200,
-        
-        # grid lines
-        gridlines.show = c(TRUE, TRUE, TRUE, TRUE, FALSE, TRUE),
-        gridline.n2.colour = "#007A87",
-        gridline.n4.colour = "#007A87",
-        
-        # grid labels
-        gridline.label.offset.y = 0,
-        
-        # axis labels
-        axis.label.offset = 1.2)
+# # Example 1:
+# df <- data.frame(
+#   NAME = 'G1',
+#   A = 0.4,
+#   B = 0.8,
+#   C = 0.5,
+#   D = 0.8,
+#   E = 0.5
+# )
+# ggradar(df)
 
-# Example 3:
-df <- data.frame(
-  NAME = c('G1', 'G2', 'G3'),
-  A = c(0.2, 0.4, 0.5),
-  B = c(0.3, 0.6, 0.3),
-  C = c(0.7, 0.3, 0.5),
-  D = c(0.4, 0.8, 0.2),
-  E = c(0.5, 0.6, 0.3)
-)
-ggradar(df)
+# # Example 2:
+# df <- data.frame(
+#   NAME = 'G1',
+#   A = 123,
+#   B = 65,
+#   C = 157,
+#   D = 181,
+#   E = 99
+# )
+# ggradar(df,
+#         # radar values
+#         values.radar = c("0", "50", "100", "150", "", "200"),
+#         grid.min = 0,
+#         grid.n2 = 50,
+#         grid.n3 = 100,
+#         grid.n4 = 150,
+#         grid.max = 200,
+        
+#         # grid lines
+#         gridlines.show = c(TRUE, TRUE, TRUE, TRUE, FALSE, TRUE),
+#         gridline.n2.colour = "#007A87",
+#         gridline.n4.colour = "#007A87",
+        
+#         # grid labels
+#         gridline.label.offset.y = 0,
+        
+#         # axis labels
+#         axis.label.offset = 1.2)
+
+# # Example 3:
+# df <- data.frame(
+#   NAME = c('G1', 'G2', 'G3'),
+#   A = c(0.2, 0.4, 0.5),
+#   B = c(0.3, 0.6, 0.3),
+#   C = c(0.7, 0.3, 0.5),
+#   D = c(0.4, 0.8, 0.2),
+#   E = c(0.5, 0.6, 0.3)
+# )
+# ggradar(df)
 
 
-# Example 4:
-df <- data.frame(
-  NAME = c('G1', 'G2', 'G3'),
-  A = c(2, 4, 5),
-  B = c(3, 6, 3),
-  C = c(7, 3, 5),
-  D = c(4, 8, 2),
-  E = c(5, 6, 3)
-)
-ggradar(df,
-        values.radar = c("0", "2", "4", "6", "8", "10"),
-        grid.min = 0,
-        grid.n2 = 2,
-        grid.n3 = 4,
-        grid.n4 = 6,
-        grid.n5 = 8,
-        grid.max = 10)
+# # Example 4:
+# df <- data.frame(
+#   NAME = c('G1', 'G2', 'G3'),
+#   A = c(2, 4, 5),
+#   B = c(3, 6, 3),
+#   C = c(7, 3, 5),
+#   D = c(4, 8, 2),
+#   E = c(5, 6, 3)
+# )
+# ggradar(df,
+#         values.radar = c("0", "2", "4", "6", "8", "10"),
+#         grid.min = 0,
+#         grid.n2 = 2,
+#         grid.n3 = 4,
+#         grid.n4 = 6,
+#         grid.n5 = 8,
+#         grid.max = 10)
 
-# Example 5: Default GGRadar plot
-df <- data.frame(
-  NAME = 'G1',
-  A = 0.4,
-  B = 0.8,
-  C = 0.5,
-  D = 0.8,
-  E = 0.5
-)
-ggradar(df,
-        # radar values
-        values.radar = c("0%", "50%", "", "", "", "100%"),
-        grid.n2 = 0.5,
+# # Example 5: Default GGRadar plot
+# df <- data.frame(
+#   NAME = 'G1',
+#   A = 0.4,
+#   B = 0.8,
+#   C = 0.5,
+#   D = 0.8,
+#   E = 0.5
+# )
+# ggradar(df,
+#         # radar values
+#         values.radar = c("0%", "50%", "", "", "", "100%"),
+#         grid.n2 = 0.5,
         
-        # grid labels
-        grid.label.color = "#000000",
-        grid.label.size = 6,
-        gridline.label.offset.x = -0.1,
+#         # grid labels
+#         grid.label.color = "#000000",
+#         grid.label.size = 6,
+#         gridline.label.offset.x = -0.1,
         
-        # grid lines
-        gridlines.show = c(TRUE, TRUE, FALSE, FALSE, FALSE, TRUE),
-        gridline.n2.colour = "#007A87",
+#         # grid lines
+#         gridlines.show = c(TRUE, TRUE, FALSE, FALSE, FALSE, TRUE),
+#         gridline.n2.colour = "#007A87",
         
-         # group
-        group.point.size = 6)
+#          # group
+#         group.point.size = 6)
 
 #
 #
