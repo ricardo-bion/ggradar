@@ -73,9 +73,7 @@ ggradar <- function(plot.data,
                     axis.labels = colnames(plot.data)[-1],
                     grid.min = 0, # 10,
                     grid.mid = 0.5, # 50,
-                    grid.max = plot.data |>
-                      select(-1) |>
-                      max(), # the maximum value which other values should be divided by to get a percentage
+                    grid.max = 1, # 100,
                     centre.y = grid.min - ((1 / 9) * (grid.max - grid.min)),
                     plot.extent.x.sf = 1,
                     plot.extent.y.sf = 1.2,
@@ -114,7 +112,7 @@ ggradar <- function(plot.data,
                     line.alpha = 1 # Alpha for lines, can be a single value or vector
 ) {
   plot.data <- as.data.frame(plot.data)
-
+  
   if (!is.factor(plot.data[, 1])) {
     plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
   }
@@ -135,9 +133,11 @@ ggradar <- function(plot.data,
     stop("plot.data' contains value(s) < centre.y", call. = FALSE)
   }
   if (max(plot.data[, -1]) > grid.max) {
-    stop("'plot.data' contains value(s) > grid.max", call. = FALSE)
+    plot.data[, -1] <- (plot.data[, -1]/max(plot.data[, -1]))*grid.max
+    warning("'plot.data' contains value(s) > grid.max, data scaled to grid.max", call. = FALSE)
   }
-
+  
+  
   ### Convert supplied data into plottable format
   # (a) add abs(centre.y) to supplied plot data
   # [creates plot centroid of 0,0 for internal use, regardless of min. value of y
