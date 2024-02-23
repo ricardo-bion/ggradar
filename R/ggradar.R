@@ -118,7 +118,7 @@ ggradar <- function(plot.data,
   if (!is.factor(plot.data[, 1])) {
     plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
   }
-
+  
   var.names <- colnames(plot.data)[-1] # Short version of variable names
   # axis.labels [if supplied] is designed to hold 'long version' of variable names
   # with line-breaks indicated using \n
@@ -333,10 +333,9 @@ ggradar <- function(plot.data,
   }
 
   if (!is.null(group.colours)) {
-    colour_values <- rep(group.colours, nrow(plot.data) / length(group.colours))
+    colour_values <- rep(group.colours, unique(plot.data[, 1]) / length(group.colours))
   } else {
-    num_groups <- nrow(plot.data)
-    colour_values <- generate_color_values(num_groups)
+    colour_values <- generate_color_values(unique(plot.data[, 1]))
   }
 
   base <- base +
