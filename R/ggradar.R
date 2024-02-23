@@ -114,7 +114,14 @@ ggradar <- function(plot.data,
                     line.alpha = 1 # Alpha for lines, can be a single value or vector
 ) {
   plot.data <- as.data.frame(plot.data)
-  
+  # if there are several groups in the first column with differing values
+  # on the dimensions, we should aggregate them by taking the mean, otherwise
+  # only the first row is taken into account in the function CalculateGroupPath.
+  plot.data <- aggregate(
+    x = plot.data[, -1], 
+    by = list(plot.data[, 1]), 
+    FUN = "mean")
+    
   if (!is.factor(plot.data[, 1])) {
     plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
   }
@@ -134,6 +141,7 @@ ggradar <- function(plot.data,
   if (min(plot.data[, -1]) < centre.y) {
     stop("plot.data' contains value(s) < centre.y", call. = FALSE)
   }
+  
   if (max(plot.data[, -1]) > grid.max) {
     plot.data[, -1] <- (plot.data[, -1]/max(plot.data[, -1]))*grid.max
     warning("'plot.data' contains value(s) > grid.max, data scaled to grid.max", call. = FALSE)
@@ -240,15 +248,15 @@ ggradar <- function(plot.data,
   # ... + circular grid-lines at 'min', 'mid' and 'max' y-axis values
   base <- base + geom_path(
     data = gridline$min$path, aes(x = x, y = y),
-    lty = gridline.min.linetype, colour = gridline.min.colour, size = grid.line.width
+    lty = gridline.min.linetype, colour = gridline.min.colour, linewidth = grid.line.width
   )
   base <- base + geom_path(
     data = gridline$mid$path, aes(x = x, y = y),
-    lty = gridline.mid.linetype, colour = gridline.mid.colour, size = grid.line.width
+    lty = gridline.mid.linetype, colour = gridline.mid.colour, linewidth = grid.line.width
   )
   base <- base + geom_path(
     data = gridline$max$path, aes(x = x, y = y),
-    lty = gridline.max.linetype, colour = gridline.max.colour, size = grid.line.width
+    lty = gridline.max.linetype, colour = gridline.max.colour, linewidth = grid.line.width
   )
 
   # + axis labels for any vertical axes [abs(x)<=x.centre.range]
@@ -280,36 +288,35 @@ ggradar <- function(plot.data,
 
   # ... + group (cluster) 'paths'
   # base <- base + geom_path(
-  #   data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName),
+  #   data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName),
   #   size = group.line.width
   # )
   if (length(line.alpha) == 1) {
-    base <- base + geom_path(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.line.width, alpha = line.alpha)
+    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), linewidth = group.line.width, alpha = line.alpha)
   } else {
     # Assuming line.alpha is a vector with the same length as the number of groups
     # This will apply different alpha values to each line
-    base <- base + geom_path(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.line.width) +
+    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), linewidth = group.line.width) +
       scale_alpha_manual(values = line.alpha)
   }
 
   # ... + group points (cluster data)
-  # base <- base + geom_point(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.point.size)
   # Modify point drawing logic based on draw.points
   if (draw.points) {
     # Check if point.alpha is a vector or single value
     if (length(point.alpha) == 1) {
-      base <- base + geom_point(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.point.size, alpha = point.alpha)
+      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), size = group.point.size, alpha = point.alpha)
     } else {
       # Assuming point.alpha is a vector with the same length as the number of groups
       # This will apply different alpha values to each group
-      base <- base + geom_point(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.point.size) +
+      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), size = group.point.size) +
         scale_alpha_manual(values = point.alpha)
     }
   }
 
   # ... + group (cluster) fills
   if (fill == TRUE) {
-    base <- base + geom_polygon(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, fill = theGroupName), alpha = fill.alpha)
+    base <- base + geom_polygon(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, fill = theGroupName), alpha = fill.alpha)
   }
 
 
@@ -333,7 +340,7 @@ ggradar <- function(plot.data,
   }
 
   if (!is.null(group.colours)) {
-    colour_values <- rep(group.colours, unique(plot.data[, 1]) / length(group.colours))
+    colour_values <- rep(group.colours, length(unique(plot.data[, 1])) / length(group.colours))
   } else {
     colour_values <- generate_color_values(unique(plot.data[, 1]))
   }
