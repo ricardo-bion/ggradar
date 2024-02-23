@@ -342,7 +342,7 @@ ggradar <- function(plot.data,
   if (!is.null(group.colours)) {
     colour_values <- rep(group.colours, length(unique(plot.data[, 1])) / length(group.colours))
   } else {
-    colour_values <- generate_color_values(unique(plot.data[, 1]))
+    colour_values <- generate_color_values(length(unique(plot.data[, 1])))
   }
 
   base <- base +
