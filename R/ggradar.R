@@ -40,6 +40,9 @@
 #' @param legend.position position of legend, valid values are "top", "right", "bottom", "left"
 #' @param fill whether to fill polygons
 #' @param fill.alpha if filling polygons, transparency values
+#' @param draw.points whether to draw points
+#' @param point.alpha alpha for points, can be a single value or vector
+#' @param line.alpha alpha for lines, can be a single value or vector
 #'
 #' @import ggplot2
 #' @return a ggplot object
@@ -106,7 +109,6 @@ ggradar <- function(plot.data,
                     legend.position = "left",
                     fill = FALSE,
                     fill.alpha = 0.5,
-                    # New parameters
                     draw.points = TRUE, # Whether to draw points
                     point.alpha = 1, # Alpha for points, can be a single value or vector
                     line.alpha = 1 # Alpha for lines, can be a single value or vector
