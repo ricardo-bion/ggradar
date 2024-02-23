@@ -292,11 +292,11 @@ ggradar <- function(plot.data,
   #   size = group.line.width
   # )
   if (length(line.alpha) == 1) {
-    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), linewidth = group.line.width, alpha = line.alpha)
+    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), linewidth = group.line.width, alpha = line.alpha)
   } else {
     # Assuming line.alpha is a vector with the same length as the number of groups
     # This will apply different alpha values to each line
-    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), linewidth = group.line.width) +
+    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), linewidth = group.line.width) +
       scale_alpha_manual(values = line.alpha)
   }
 
@@ -305,18 +305,18 @@ ggradar <- function(plot.data,
   if (draw.points) {
     # Check if point.alpha is a vector or single value
     if (length(point.alpha) == 1) {
-      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), size = group.point.size, alpha = point.alpha)
+      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), size = group.point.size, alpha = point.alpha)
     } else {
       # Assuming point.alpha is a vector with the same length as the number of groups
       # This will apply different alpha values to each group
-      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName), size = group.point.size) +
+      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), size = group.point.size) +
         scale_alpha_manual(values = point.alpha)
     }
   }
 
   # ... + group (cluster) fills
   if (fill == TRUE) {
-    base <- base + geom_polygon(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, fill = theGroupName), alpha = fill.alpha)
+    base <- base + geom_polygon(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], fill = .data[[theGroupName]]), alpha = fill.alpha)
   }
 
 
