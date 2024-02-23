@@ -40,6 +40,9 @@
 #' @param legend.position position of legend, valid values are "top", "right", "bottom", "left"
 #' @param fill whether to fill polygons
 #' @param fill.alpha if filling polygons, transparency values
+#' @param draw.points whether to draw points
+#' @param point.alpha alpha for points, can be a single value or vector
+#' @param line.alpha alpha for lines, can be a single value or vector
 #'
 #' @import ggplot2
 #' @return a ggplot object
@@ -103,16 +106,26 @@ ggradar <- function(plot.data,
                     legend.title = "",
                     plot.title = "",
                     legend.text.size = 14,
-
                     legend.position = "left",
                     fill = FALSE,
-                    fill.alpha = 0.5) {
+                    fill.alpha = 0.5,
+                    draw.points = TRUE, # Whether to draw points
+                    point.alpha = 1, # Alpha for points, can be a single value or vector
+                    line.alpha = 1 # Alpha for lines, can be a single value or vector
+) {
   plot.data <- as.data.frame(plot.data)
-
-  if(!is.factor(plot.data[, 1])) {
+  # if there are several groups in the first column with differing values
+  # on the dimensions, we should aggregate them by taking the mean, otherwise
+  # only the first row is taken into account in the function CalculateGroupPath.
+  plot.data <- aggregate(
+    x = plot.data[, -1], 
+    by = list(plot.data[, 1]), 
+    FUN = "mean")
+    
+  if (!is.factor(plot.data[, 1])) {
     plot.data[, 1] <- as.factor(as.character(plot.data[, 1]))
   }
-
+  
   var.names <- colnames(plot.data)[-1] # Short version of variable names
   # axis.labels [if supplied] is designed to hold 'long version' of variable names
   # with line-breaks indicated using \n
@@ -128,10 +141,13 @@ ggradar <- function(plot.data,
   if (min(plot.data[, -1]) < centre.y) {
     stop("plot.data' contains value(s) < centre.y", call. = FALSE)
   }
+  
   if (max(plot.data[, -1]) > grid.max) {
-    stop("'plot.data' contains value(s) > grid.max", call. = FALSE)
+    plot.data[, -1] <- (plot.data[, -1]/max(plot.data[, -1]))*grid.max
+    warning("'plot.data' contains value(s) > grid.max, data scaled to grid.max", call. = FALSE)
   }
-
+  
+  
   ### Convert supplied data into plottable format
   # (a) add abs(centre.y) to supplied plot data
   # [creates plot centroid of 0,0 for internal use, regardless of min. value of y
@@ -205,7 +221,7 @@ ggradar <- function(plot.data,
       legend.key = element_rect(linetype = "blank")
     )
 
-  if (plot.legend == FALSE) legend.position = "none"
+  if (plot.legend == FALSE) legend.position <- "none"
 
   # Base-layer = axis labels + plot extent
   # [need to declare plot extent as well, since the axis labels don't always
@@ -218,7 +234,10 @@ ggradar <- function(plot.data,
   # identify plot extent when plotting first (base) layer]
 
   # base layer = axis labels for axes to left of central y-axis [x< -(x.centre.range)]
-  base <- ggplot(axis$label) + xlab(NULL) + ylab(NULL) + coord_equal() +
+  base <- ggplot(axis$label) +
+    xlab(NULL) +
+    ylab(NULL) +
+    coord_equal() +
     geom_text(
       data = subset(axis$label, axis$label$x < (-x.centre.range)),
       aes(x = x, y = y, label = text), size = axis.label.size, hjust = 1, family = font.radar
@@ -229,15 +248,15 @@ ggradar <- function(plot.data,
   # ... + circular grid-lines at 'min', 'mid' and 'max' y-axis values
   base <- base + geom_path(
     data = gridline$min$path, aes(x = x, y = y),
-    lty = gridline.min.linetype, colour = gridline.min.colour, size = grid.line.width
+    lty = gridline.min.linetype, colour = gridline.min.colour, linewidth = grid.line.width
   )
   base <- base + geom_path(
     data = gridline$mid$path, aes(x = x, y = y),
-    lty = gridline.mid.linetype, colour = gridline.mid.colour, size = grid.line.width
+    lty = gridline.mid.linetype, colour = gridline.mid.colour, linewidth = grid.line.width
   )
   base <- base + geom_path(
     data = gridline$max$path, aes(x = x, y = y),
-    lty = gridline.max.linetype, colour = gridline.max.colour, size = grid.line.width
+    lty = gridline.max.linetype, colour = gridline.max.colour, linewidth = grid.line.width
   )
 
   # + axis labels for any vertical axes [abs(x)<=x.centre.range]
@@ -268,17 +287,36 @@ ggradar <- function(plot.data,
   theGroupName <- names(group$path[1])
 
   # ... + group (cluster) 'paths'
-  base <- base + geom_path(
-    data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName),
-    size = group.line.width
-  )
+  # base <- base + geom_path(
+  #   data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = theGroupName, colour = theGroupName),
+  #   size = group.line.width
+  # )
+  if (length(line.alpha) == 1) {
+    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), linewidth = group.line.width, alpha = line.alpha)
+  } else {
+    # Assuming line.alpha is a vector with the same length as the number of groups
+    # This will apply different alpha values to each line
+    base <- base + geom_path(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), linewidth = group.line.width) +
+      scale_alpha_manual(values = line.alpha)
+  }
 
   # ... + group points (cluster data)
-  base <- base + geom_point(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, colour = theGroupName), size = group.point.size)
+  # Modify point drawing logic based on draw.points
+  if (draw.points) {
+    # Check if point.alpha is a vector or single value
+    if (length(point.alpha) == 1) {
+      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), size = group.point.size, alpha = point.alpha)
+    } else {
+      # Assuming point.alpha is a vector with the same length as the number of groups
+      # This will apply different alpha values to each group
+      base <- base + geom_point(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], colour = .data[[theGroupName]]), size = group.point.size) +
+        scale_alpha_manual(values = point.alpha)
+    }
+  }
 
   # ... + group (cluster) fills
-  if(fill == TRUE) {
-    base <- base + geom_polygon(data = group$path, aes_string(x = "x", y = "y", group = theGroupName, fill = theGroupName), alpha = fill.alpha)
+  if (fill == TRUE) {
+    base <- base + geom_polygon(data = group$path, aes(x = .data[["x"]], y = .data[["y"]], group = .data[[theGroupName]], fill = .data[[theGroupName]]), alpha = fill.alpha)
   }
 
 
@@ -302,18 +340,19 @@ ggradar <- function(plot.data,
   }
 
   if (!is.null(group.colours)) {
-    colour_values <- rep(group.colours, 100)
+    colour_values <- rep(group.colours, length(unique(plot.data[, 1])) / length(group.colours))
   } else {
-    colour_values <- rep(c(
-      "#FF5A5F", "#FFB400", "#007A87", "#8CE071", "#7B0051",
-      "#00D1C1", "#FFAA91", "#B4A76C", "#9CA299", "#565A5C", "#00A04B", "#E54C20"
-    ), 100)
+    colour_values <- generate_color_values(length(unique(plot.data[, 1])))
   }
 
-  base <- base + theme(legend.key.width = unit(3, "line")) + theme(text = element_text(
-    size = 20,
-    family = font.radar
-  )) +
+  base <- base +
+    theme(
+      legend.key.width = unit(3, "line"),
+      text = element_text(
+        size = 20,
+        family = font.radar
+      )
+    ) +
     theme(legend.text = element_text(size = legend.text.size), legend.position = legend.position) +
     theme(legend.key.height = unit(2, "line")) +
     scale_colour_manual(values = colour_values) +
@@ -321,12 +360,12 @@ ggradar <- function(plot.data,
     theme(legend.title = element_blank())
 
 
-  if(isTRUE(fill)) {
+  if (isTRUE(fill)) {
     base <- base +
       scale_fill_manual(values = colour_values, guide = "none")
   }
 
-  if(legend.title != "") {
+  if (legend.title != "") {
     base <- base + theme(legend.title = element_text())
   }
 
